@@ -273,9 +273,9 @@ Apache 2.0 — see [LICENSE](LICENSE).
 
 **Immutable schema bytes** (use after your Git release tag exists): `https://raw.githubusercontent.com/aurelian-aegis/aurelianaegis-attestation-schema/<tag>/schema/attestation-envelope.json`. The JSON Schema `$id` is `https://aurelianaegis.io/schema/attestation-envelope.json` (no version segment); dereferencing requires a host that serves this file, or use the raw Git URL.
 
-**Zenodo DOI:** Connect the repo to [Zenodo](https://zenodo.org/), publish a GitHub release, then copy the assigned DOI into `CITATION.cff` (`doi:` field) and update the BibTeX below. Full steps: [spec/PUBLICATION.md](spec/PUBLICATION.md) and [spec/ZENODO.md](spec/ZENODO.md).
+**Zenodo DOI:** [10.5281/zenodo.19636844](https://doi.org/10.5281/zenodo.19636844)
 
-**BibTeX (after Zenodo assigns a DOI, replace `ZENODO_RECORD_ID`):**
+**BibTeX:**
 
 ```bibtex
 @software{aurelianaegis_attestation_schema_2026,
@@ -284,12 +284,10 @@ Apache 2.0 — see [LICENSE](LICENSE).
   year         = 2026,
   publisher    = {Zenodo},
   version      = {1.0.0},
-  doi          = {10.5281/zenodo.ZENODO_RECORD_ID},
-  url          = {https://doi.org/10.5281/zenodo.ZENODO_RECORD_ID}
+  doi          = {10.5281/zenodo.19636844},
+  url          = {https://doi.org/10.5281/zenodo.19636844}
 }
 ```
-
-Until a DOI exists, cite the **release tag** and commit SHA, e.g. `https://github.com/aurelian-aegis/aurelianaegis-attestation-schema/releases/tag/v1.0.0`.
 
 ---
 

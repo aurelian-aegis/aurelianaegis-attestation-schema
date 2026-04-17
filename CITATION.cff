@@ -24,9 +24,7 @@ keywords:
 license: Apache-2.0
 repository-code: "https://github.com/aurelian-aegis/aurelianaegis-attestation-schema"
 url: "https://github.com/aurelian-aegis/aurelianaegis-attestation-schema"
-# After Zenodo archives a GitHub release, add a top-level line:
-#   doi: 10.5281/zenodo.<RECORD_ID>
-# (see spec/PUBLICATION.md).
+doi: 10.5281/zenodo.19636844
 identifiers:
   - type: url
     value: "https://raw.githubusercontent.com/aurelian-aegis/aurelianaegis-attestation-schema/v1.0.0/schema/attestation-envelope.json"
