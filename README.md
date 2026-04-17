@@ -1,6 +1,6 @@
 # AurelianAegis Attestation Envelope Schema
 
-**The standard format for AI agent governance telemetry.**
+**An open vocabulary and reference format for AI agent governance attestation.**
 
 [License](LICENSE)
 [Spec](schema/attestation-envelope.json)
@@ -9,9 +9,9 @@
 
 ## The Problem
 
-Enterprises deploying AI agents face a compliance gap: they can prove what their governance program *says*, but not what their agents *actually did* — at the action level, with cryptographic proof.
+Enterprises deploying AI agents face a governance evidence gap: they can demonstrate what their governance program *says*, but not what their agents *actually did* — at the action level, in a structured, verifiable format.
 
-Regulators (EU AI Act, US EO 14110) and auditors (SOX, SOC 2) require evidence that each agent action was authorized before execution, under the correct policy version, with evidence that cannot be altered.
+Regulations (EU AI Act, US EO 14110) and audit frameworks (SOX, SOC 2) require evidence that agent actions were authorized under the correct policy version and that records are consistent and tamper-evident. No open, interoperable format exists to structure that evidence today.
 
 ## The Solution
 
@@ -26,11 +26,15 @@ Every governed action uses signed records that include:
 - **Context.telemetry** — latency and observability metrics (SRE-facing)
 - **Context.cost** — token and cost metrics for CFO/COO analytics (business outcome governance)
 - **Context.business_outcome_ref** — URI to join with external KPIs (policy-outcome misalignment analysis)
-- **Chain integrity** — `sequence_number` + `previous_event_hash` form an append-only hash chain (SHA-256 of RFC 8785 canonical form) for tamper-evident audit logs with deletion detection
+- **Chain integrity** — `sequence_number` + `previous_event_hash` form an append-only hash chain (SHA-256 of RFC 8785 canonical form) for structured audit logs with gap and deletion detection. Note: concurrent actions per agent must be serialised; tail deletion requires WORM storage — see [CHAIN-INTEGRITY.md](spec/CHAIN-INTEGRITY.md) for full scope and known constraints
 
-Parseable by any SIEM, observability, or GRC tool. Cryptographically verifiable. Extensible via `x-*` vendor fields for safe interoperability.
+Parseable by any SIEM, observability, or GRC tool. Cryptographically integrity-verified. Extensible via `x-*` vendor fields for safe interoperability.
 
-*Think of it as OpenTelemetry for agent governance.*
+*Think of it as OpenTelemetry for agent governance — a shared vocabulary, not a mandatory runtime.*
+
+**Scope:** this schema is designed for deployments where the operator controls the execution environment and can run a trusted enforcement layer (SDK, sidecar, or gateway) that intercepts capability calls. It is not designed for open-ended consumer AI agents or deployments without a controlled runtime boundary.
+
+**Status:** v1.0.0 is a stable reference implementation and open vocabulary contribution. It is not yet widely adopted; the project is in active community building and standards engagement. Known v1 constraints (chain serialisation for high-throughput agents, multi-agent subtree commitment) are documented in [spec/CHAIN-INTEGRITY.md](spec/CHAIN-INTEGRITY.md) and targeted for v2.
 
 **Repository posture:** this is a GitHub-published schema/specification repository with validation tooling and interoperability fixtures. It is not currently positioned as a separately published npm package.
 
@@ -167,7 +171,7 @@ node scripts/validate.js examples/attestation-example.json examples/admissibilit
 
 - **SIEM**: Ingest attestations via Kafka, HTTP, or file export. Parse as structured JSON.
 - **Business outcome governance**: Use `context.cost`, `context.business_outcome_ref`, `x-risk-category`, `x-domain-risk`, and `policy.trust_scores` for cost drift, quality drift, and policy-outcome misalignment analysis (CFO, COO, CPO use cases).
-- **GRC**: Feed attestations into compliance reporting (EU AI Act technical file, SOC 2, ISO 42001). See [spec/REGULATORY-FIELD-MAPPING.md](spec/REGULATORY-FIELD-MAPPING.md) for auditor-facing field mapping.
+- **GRC**: Feed attestations into compliance reporting (EU AI Act technical file, SOC 2, ISO 42001) as structured evidence. Auditors accept a range of evidence formats; this schema provides a consistent, machine-parseable vocabulary for that evidence. See [spec/REGULATORY-FIELD-MAPPING.md](spec/REGULATORY-FIELD-MAPPING.md) for field-level mapping.
 - **Observability**: Use `event_id`, `context.correlation_id`, `context.trace_id` for distributed tracing (W3C Trace Context / OpenTelemetry).
 
 See [spec/INTEGRATION.md](spec/INTEGRATION.md) for detailed integration guidance.
