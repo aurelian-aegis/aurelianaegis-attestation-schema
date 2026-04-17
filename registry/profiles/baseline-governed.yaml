@@ -1,0 +1,7 @@
+id: io.aurelianaegis.profile.baseline-governed
+owner: schema-maintainers
+status: active
+required_extensions:
+  - io.aurelianaegis.ext.finance-risk-controls
+optional_extensions:
+  - io.aurelianaegis.ext.dlp-shadow-ai

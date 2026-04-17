@@ -1,0 +1,35 @@
+name: Release Smoke Checks
+
+on:
+  push:
+    branches:
+      - "release/**"
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Validate release metadata completeness (DOI + README)
+        run: npm run check:release-metadata
+
+      - name: Verify canonical $id endpoint availability + immutable bytes
+        env:
+          SCHEMA_HOST_URL: https://aurelianaegis.io/schema/attestation-envelope.json
+        run: npm run monitor:schema-host
+        continue-on-error: true  # Remove once aurelianaegis.io is confirmed live

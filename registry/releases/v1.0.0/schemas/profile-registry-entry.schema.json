@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aurelianaegis.io/schema/profile-registry-entry.json",
+  "title": "ProfileRegistryEntry",
+  "type": "object",
+  "required": ["id", "owner", "status", "required_extensions", "optional_extensions"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^io\\.[a-z0-9.-]+\\.profile\\.[a-z0-9._-]+$" },
+    "owner": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["active", "experimental"] },
+    "required_extensions": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^io\\.[a-z0-9.-]+\\.ext\\.[a-z0-9._-]+$" },
+      "uniqueItems": true
+    },
+    "optional_extensions": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^io\\.[a-z0-9.-]+\\.ext\\.[a-z0-9._-]+$" },
+      "uniqueItems": true
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aurelianaegis.io/schema/extension-registry-entry.json",
+  "title": "ExtensionRegistryEntry",
+  "type": "object",
+  "required": [
+    "id",
+    "namespace",
+    "owner",
+    "status",
+    "schema_ref",
+    "security_impact",
+    "compatibility"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^io\\.[a-z0-9.-]+\\.ext\\.[a-z0-9._-]+$" },
+    "namespace": {
+      "type": "string",
+      "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z][a-z0-9-]{1,63}$"
+    },
+    "owner": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["active", "experimental"] },
+    "schema_ref": { "type": "string", "format": "uri" },
+    "security_impact": {
+      "type": "string",
+      "enum": ["none", "low", "medium", "high", "critical"]
+    },
+    "compatibility": { "type": "string", "enum": ["additive", "breaking", "clarification"] }
+  }
+}

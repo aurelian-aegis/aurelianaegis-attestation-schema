@@ -1,0 +1,18 @@
+{
+  "name": "minimal-ed25519",
+  "algorithm": "Ed25519",
+  "payload_object": {
+    "/actor": {
+      "agent_id": "urn:aurelianaegis:agent:acme:test",
+      "passport_hash": "sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+    },
+    "/event_id": "urn:aurelianaegis:event:tenant:12345678-1234-1234-1234-123456789012",
+    "/spec_id": "aurelianaegis.envelope.v1"
+  },
+  "expected": {
+    "canonical_json": "{\"/actor\":{\"agent_id\":\"urn:aurelianaegis:agent:acme:test\",\"passport_hash\":\"sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2\"},\"/event_id\":\"urn:aurelianaegis:event:tenant:12345678-1234-1234-1234-123456789012\",\"/spec_id\":\"aurelianaegis.envelope.v1\"}",
+    "canonical_hex": "7b222f6163746f72223a7b226167656e745f6964223a2275726e3a617572656c69616e61656769733a6167656e743a61636d653a74657374222c2270617373706f72745f68617368223a227368613235363a61316232633364346535663661376238633964306531663261336234633564366537663861396230633164326533663461356236633764386539663061316232227d2c222f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a31323334353637382d313233342d313233342d313233342d313233343536373839303132222c222f737065635f6964223a22617572656c69616e61656769732e656e76656c6f70652e7631227d",
+    "signature_base64url": "10iWsuBcaEw9PIBildCnMh2dPIRzaqCvRqK1_nQ3cQCwH1qqZINlFUyo4rBBKkdW_t7thfSCLaGuPCpnolXPAw",
+    "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEArJe9+FjUDs5HxS3cCYSXAv1kfAgswaHKT77yZPIbmQ0=\n-----END PUBLIC KEY-----\n"
+  }
+}

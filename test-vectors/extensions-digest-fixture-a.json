@@ -1,0 +1,9 @@
+{
+  "extensions": {
+    "io.aurelianaegis.ext.finance-risk-controls": {
+      "approval_band": "high_value",
+      "control_mode": "dual_control"
+    }
+  },
+  "expected_extensions_digest": "sha256:c358d9d832aa82ff7de832c9922d5eb268e0fd162ffa174a3637e89c45e181ca"
+}

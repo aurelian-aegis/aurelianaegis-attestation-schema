@@ -1,0 +1,7 @@
+id: io.aurelianaegis.ext.finance-risk-controls
+namespace: io.aurelianaegis.ext.finance-risk-controls
+owner: governance-finance-platform
+status: active
+schema_ref: https://aurelianaegis.io/schema/extensions/finance-risk-controls/v1
+security_impact: high
+compatibility: additive

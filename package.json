@@ -1,0 +1,29 @@
+{
+  "name": "@aurelianaegis/attestation-envelope-schema",
+  "version": "1.0.0",
+  "description": "AurelianAegis Attestation Envelope Schema — governance telemetry (admissibility_token + execution_receipt; spec_id aurelianaegis.envelope.v1)",
+  "private": true,
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "validate:examples": "node scripts/validate.js --scope=current",
+    "validate:current": "node scripts/validate.js --scope=current",
+    "validate:release": "node scripts/validate.js --scope=release --release=v1.0.0",
+    "validate:all": "node scripts/validate.js --scope=all",
+    "verify:test-vectors": "node scripts/verify-test-vectors.js",
+    "test:constraints": "node scripts/test-schema-constraints.js",
+    "test:conformance": "node scripts/test-conformance-matrix.js",
+    "test:extensions-digest": "node scripts/test-extensions-digest.js",
+    "monitor:schema-host": "node scripts/check-schema-host.js",
+    "check:release-metadata": "node scripts/check-release-metadata.js",
+    "lint:registry": "node scripts/lint-registry.js",
+    "resolve:profile": "node scripts/resolve-profile.js",
+    "check:compatibility": "node scripts/check-compatibility.js",
+    "generate:test-vectors": "node scripts/write-test-vectors.js",
+    "check": "npm run check:compatibility && npm run validate && npm run verify:test-vectors && npm run test:constraints && npm run lint:registry && npm run test:conformance && npm run test:extensions-digest"
+  },
+  "devDependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "canonicalize": "^2.1.0"
+  }
+}

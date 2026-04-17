@@ -1,0 +1,40 @@
+{
+  "creators": [
+    {
+      "name": "AurelianAegis",
+      "type": "Organization"
+    }
+  ],
+  "title": "AurelianAegis Attestation Envelope Schema",
+  "description": "The standard format for AI agent governance telemetry. A JSON Schema (draft-07) that defines the attestation envelope structure for signed governance telemetry from AI agents. Every agent action produces a signed attestation with agent identity, capability, policy decision, and outcome. Supports EU AI Act, SOX, SOC 2, and ISO 42001 compliance mapping.",
+  "version": "1.0.0",
+  "keywords": [
+    "AI governance",
+    "attestation",
+    "JSON Schema",
+    "agent identity",
+    "compliance",
+    "EU AI Act",
+    "SOX",
+    "SOC 2",
+    "governance telemetry",
+    "cryptographic signing",
+    "audit trail"
+  ],
+  "license": "apache-2.0",
+  "upload_type": "software",
+  "access_right": "open",
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://raw.githubusercontent.com/aurelian-aegis/aurelianaegis-attestation-schema/v1.0.0/schema/attestation-envelope.json",
+      "relation": "isIdenticalTo",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://aurelianaegis.io/schema/attestation-envelope.json",
+      "relation": "isIdenticalTo",
+      "resource_type": "other"
+    }
+  ]
+}

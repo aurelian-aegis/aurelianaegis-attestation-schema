@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: "If you use this schema, please cite it as below."
+title: "AurelianAegis Attestation Envelope Schema"
+version: 1.0.0
+date-released: 2026-04-15
+type: software
+authors:
+  - name: "AurelianAegis"
+    type: organization
+abstract: >-
+  The standard format for AI agent governance telemetry. A JSON Schema (draft-07)
+  that defines the attestation envelope structure for signed governance telemetry
+  from AI agents. Every agent action produces a signed attestation with agent
+  identity, capability, policy decision, and outcome. Supports EU AI Act, SOX,
+  SOC 2, and ISO 42001 compliance mapping.
+keywords:
+  - AI governance
+  - attestation
+  - JSON Schema
+  - agent identity
+  - compliance
+  - EU AI Act
+  - governance telemetry
+license: Apache-2.0
+repository-code: "https://github.com/aurelian-aegis/aurelianaegis-attestation-schema"
+url: "https://github.com/aurelian-aegis/aurelianaegis-attestation-schema"
+# After Zenodo archives a GitHub release, add a top-level line:
+#   doi: 10.5281/zenodo.<RECORD_ID>
+# (see spec/PUBLICATION.md).
+identifiers:
+  - type: url
+    value: "https://raw.githubusercontent.com/aurelian-aegis/aurelianaegis-attestation-schema/v1.0.0/schema/attestation-envelope.json"

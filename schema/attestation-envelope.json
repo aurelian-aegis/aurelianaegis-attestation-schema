@@ -1,0 +1,1177 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aurelianaegis.io/schema/attestation-envelope.json",
+  "title": "AurelianAegisAttestationEnvelope",
+  "description": "AurelianAegis attestation envelope: pre-execution admissibility_token (PEP/OAP-oriented) and post-execution execution_receipt. Evolves by additive changes under stable spec_id aurelianaegis.envelope.v1 until a breaking spec (rare).",
+  "oneOf": [
+    { "$ref": "#/definitions/AdmissibilityToken" },
+    { "$ref": "#/definitions/ExecutionReceipt" }
+  ],
+
+  "definitions": {
+
+    "ArtifactType": {
+      "type": "string",
+      "enum": ["admissibility_token", "execution_receipt"],
+      "description": "Discriminator: PEP pre-execution token vs post-execution receipt."
+    },
+
+    "Runtime": {
+      "type": "object",
+      "description": "AI runtime or orchestration framework where the agent executes.",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "azure_ai_foundry",
+            "openai",
+            "aws_bedrock",
+            "google_vertex",
+            "langgraph",
+            "autogen",
+            "crewai",
+            "semantic_kernel",
+            "nvidia_nim",
+            "anthropic",
+            "mistral",
+            "custom"
+          ],
+          "description": "AI runtime or orchestration framework."
+        },
+        "runtime_id": { "type": "string", "description": "Runtime-specific agent or assistant ID" },
+        "region": { "type": "string", "description": "Cloud region" }
+      }
+    },
+
+    "Actor": {
+      "type": "object",
+      "description": "Agent identity and provenance. For admissibility tokens, passport_hash and external_id SHOULD be present for federated/OAP-aligned deployments.",
+      "required": ["agent_id"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "allOf": [
+        {
+          "if": { "required": ["passport_public_key_inline"] },
+          "then": { "required": ["passport_public_key_format"] }
+        },
+        {
+          "if": {
+            "not": {
+              "properties": { "registration_status": { "enum": ["unregistered", "heuristic"] } },
+              "required": ["registration_status"]
+            }
+          },
+          "then": { "required": ["passport_hash"] }
+        }
+      ],
+      "properties": {
+        "agent_id": {
+          "type": "string",
+          "pattern": "^urn:[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+:[a-zA-Z0-9_-]+:[a-zA-Z0-9._-]+$",
+          "description": "Agent identifier (URN)."
+        },
+        "registration_status": {
+          "type": "string",
+          "enum": ["registered", "unregistered", "heuristic"],
+          "description": "Governance passport status."
+        },
+        "external_id": {
+          "type": "string",
+          "description": "Portable identity: DID, SPIFFE SVID, or IANA URN (OAP/federated meshes)."
+        },
+        "passport_hash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[a-f0-9]{64}$",
+          "description": "SHA-256 of agent passport in effect at decision time."
+        },
+        "passport_registry_ref": { "type": "string", "description": "URI to passport registry entry." },
+        "public_key_ref": { "type": "string", "description": "URI or key ID for verification." },
+        "passport_public_key_inline": { "type": "string", "description": "Base64-encoded public key for offline verification." },
+        "passport_key_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 fingerprint of signer public key."
+        },
+        "passport_public_key_format": {
+          "type": "string",
+          "enum": ["raw", "der", "pem"],
+          "description": "Encoding of passport_public_key_inline."
+        },
+        "agent_version": { "type": "string", "description": "Agent semantic version." },
+        "model_lifecycle_attestation_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to model lifecycle attestation (IETF/OAP-aligned provenance root)."
+        },
+        "model_lifecycle_attestation_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of lifecycle attestation content (lowercase hex)."
+        },
+        "runtime": { "$ref": "#/definitions/Runtime" }
+      }
+    },
+
+    "Asset": {
+      "type": "object",
+      "description": "Target asset or subject of the governed action.",
+      "required": ["id", "type"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable asset identifier (URN, catalog ID, or system key)."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["registered_agent", "ai_tool", "workflow", "entity", "data_store", "other"],
+          "description": "Asset class for PEP boundary checks."
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Legal or policy jurisdiction tag (e.g. eu, us_ca, uk)."
+        },
+        "system_id": {
+          "type": "string",
+          "description": "Owning system or application identifier."
+        }
+      }
+    },
+
+    "Authority": {
+      "type": "object",
+      "description": "Legal and policy basis for the action.",
+      "required": ["basis"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": ["policy", "consent", "contract", "statutory"],
+          "description": "Primary basis for authorization."
+        },
+        "policy_version": {
+          "type": "string",
+          "description": "Human-readable policy bundle version (complements policy_set_hash)."
+        },
+        "consent_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to consent record."
+        },
+        "consent_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of consent artifact."
+        },
+        "contract_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to contract or DPA."
+        },
+        "contract_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of contract artifact."
+        }
+      }
+    },
+
+    "Risk": {
+      "type": "object",
+      "description": "Pre-execution risk posture for the action.",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "data_classes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Data classes in scope (e.g. pii, phi, pci, trade_secret)."
+        },
+        "sensitivity": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted", "secret"],
+          "description": "Aggregate sensitivity."
+        },
+        "external_exposure": {
+          "type": "string",
+          "enum": ["none", "partner", "internet", "unknown"],
+          "description": "Whether data leaves trust boundary."
+        },
+        "irreversibility": {
+          "type": "string",
+          "enum": ["reversible", "partially_reversible", "irreversible"],
+          "description": "Reversibility of side effects."
+        },
+        "blast_radius_estimate": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "Estimated impact if policy fails."
+        },
+        "novelty_flag": {
+          "type": "boolean",
+          "description": "True if capability or context is novel vs baseline."
+        },
+        "max_risk_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Optional ceiling from the real-time risk engine at invocation (0–1). Supports threshold-based holds and audit evidence."
+        },
+        "dynamic_assessment_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to the dynamic risk assessment record or engine output for this decision."
+        }
+      }
+    },
+
+    "DataBoundaries": {
+      "type": "object",
+      "description": "Signed data-flow and residency claims for liability and GDPR/SOX-style evidence.",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "data_sources_permitted": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Allowed source systems or data domains."
+        },
+        "data_sinks_prohibited": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Explicitly prohibited destinations (e.g. public_llm, personal_email)."
+        },
+        "data_residency": {
+          "type": "string",
+          "description": "Required region or residency policy tag."
+        },
+        "cross_boundary_consent_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to cross-border transfer consent."
+        },
+        "cross_boundary_consent_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of consent content."
+        },
+        "ephemeral_only": {
+          "type": "boolean",
+          "description": "Data must not persist beyond execution context."
+        },
+        "retention_policy": {
+          "type": "string",
+          "description": "Retention rule id or summary."
+        },
+        "boundary_enforcement": {
+          "type": "string",
+          "enum": ["not_evaluated", "allowed", "blocked", "redacted", "escalated"],
+          "description": "Outcome of boundary checks at PEP."
+        }
+      }
+    },
+
+    "LiabilityOwner": {
+      "type": "object",
+      "description": "Named accountable legal entity.",
+      "required": ["legal_entity_name"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "legal_entity_name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Legal name of accountable party."
+        },
+        "lei": {
+          "type": "string",
+          "description": "Legal Entity Identifier (ISO 17442)."
+        },
+        "duns": {
+          "type": "string",
+          "description": "DUNS number."
+        },
+        "insurance_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to insurance or bond reference."
+        }
+      }
+    },
+
+    "Liability": {
+      "type": "object",
+      "description": "Liability and escalation mapping (admissibility token SHOULD carry; receipt MAY copy).",
+      "required": ["liability_owner"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "liability_owner": { "$ref": "#/definitions/LiabilityOwner" },
+        "indemnification_scope": {
+          "type": "string",
+          "enum": ["none", "limited", "full", "custom"],
+          "description": "Indemnification posture."
+        },
+        "indemnification_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to contract clause or policy."
+        },
+        "incident_escalation_sla": {
+          "type": "string",
+          "description": "SLA id or human-readable window (e.g. P1-1h)."
+        },
+        "incident_escalation_channel_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to on-call or ticketing route."
+        }
+      }
+    },
+
+    "RegisteredAgentLegal": {
+      "type": "object",
+      "description": "Service-of-process and registered-agent legal continuity (enterprise legal workflows). All fields optional; use x-* for vendor extensions.",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "entity_name": {
+          "type": "string",
+          "description": "Legal entity or party associated with the registered-agent action."
+        },
+        "delivery_window": {
+          "type": "string",
+          "description": "Accepted delivery or notice window (human-readable or policy tag)."
+        },
+        "document_type": {
+          "type": "string",
+          "description": "Type of filing, notice, or instrument."
+        },
+        "receipt_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When receipt or acknowledgment was recorded (UTC)."
+        },
+        "deadline_impact": {
+          "type": "string",
+          "description": "Effect on statutory, contractual, or internal deadlines."
+        },
+        "escalation_status": {
+          "type": "string",
+          "description": "Workflow escalation state (e.g. pending, escalated, resolved)."
+        }
+      }
+    },
+
+    "LegalExtensions": {
+      "type": "object",
+      "description": "Top-level x-legal block: optional registered_agent structure plus backward-compatible extra keys.",
+      "additionalProperties": true,
+      "properties": {
+        "registered_agent": { "$ref": "#/definitions/RegisteredAgentLegal" }
+      }
+    },
+
+    "Capability": {
+      "type": "object",
+      "description": "Intended or executed capability.",
+      "required": ["id", "domain"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "id": { "type": "string", "description": "Capability id (domain.action_verb)." },
+        "domain": { "type": "string", "description": "Domain classification." },
+        "parameters": {
+          "type": "object",
+          "description": "Sanitized parameters; sensitive values MUST be redacted or hashed."
+        },
+        "contains_pii": { "type": "boolean" },
+        "redaction_policy": {
+          "type": "string",
+          "enum": ["none", "hash_sensitive_only", "hash_all", "redact_sensitive_only"],
+          "description": "Redaction applied to parameters."
+        },
+        "is_state_mutating": {
+          "type": "boolean",
+          "description": "True if the action can cause irreversible or externally visible side effects (state change). Informs Risk.irreversibility, blast-radius, dead-man-switch, and high-risk EU AI Act controls."
+        }
+      }
+    },
+
+    "User": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["customer", "employee", "system", "service_account", "agent"]
+        },
+        "id": { "type": "string" },
+        "segment": { "type": "string" }
+      }
+    },
+
+    "Telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "latency_ms": { "type": "integer", "description": "PEP evaluation latency (ms)." }
+      }
+    },
+
+    "CostInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "input_tokens": { "type": "integer", "minimum": 0 },
+        "output_tokens": { "type": "integer", "minimum": 0 },
+        "model_cost_usd": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "Context": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "correlation_id": { "type": "string" },
+        "trace_id": { "type": "string" },
+        "session_id": { "type": "string" },
+        "user": { "$ref": "#/definitions/User" },
+        "channel": { "type": "string" },
+        "request_id": { "type": "string" },
+        "telemetry": { "$ref": "#/definitions/Telemetry" },
+        "cost": { "$ref": "#/definitions/CostInfo" },
+        "business_outcome_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "URI to external KPI record (typically on receipt)."
+        }
+      }
+    },
+
+    "TrustScores": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "overall": { "type": "number", "minimum": 0, "maximum": 1 },
+        "capability": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "Policy": {
+      "type": "object",
+      "description": "Authorization decision and policy-evidence bindings.",
+      "required": ["governance_profile_id", "decision"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "allOf": [
+        {
+          "if": { "required": ["trust_scores"] },
+          "then": { "required": ["trust_score_model"] }
+        },
+        {
+          "if": { "required": ["policy_inputs_ref"] },
+          "then": { "required": ["policy_inputs_hash"] }
+        }
+      ],
+      "properties": {
+        "governance_profile_id": { "type": "string" },
+        "risk_tier": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "oversight_mode": {
+          "type": "string",
+          "enum": ["autonomous", "supervised", "human_in_loop", "dual_control"]
+        },
+        "trust_scores": { "$ref": "#/definitions/TrustScores" },
+        "trust_score_model": { "type": "string" },
+        "trust_score_version": { "type": "string" },
+        "decision": {
+          "type": "string",
+          "enum": ["allow", "deny", "escalate", "defer", "supervised_override"],
+          "description": "Authorization decision. supervised_override: human-approved exception path."
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Machine-readable reasons (stable codes; see VOCABULARY)."
+        },
+        "constraints_applied": {
+          "type": "object",
+          "description": "Constraints enforced (domain-specific)."
+        },
+        "violation_flags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "policy_set_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 Merkle root or digest of evaluated policy bundle."
+        },
+        "execution_intent_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of canonical pre-execution intent (actor, asset, capability, boundaries, nonce, window)."
+        },
+        "policy_inputs_ref": { "type": "string", "format": "uri" },
+        "policy_inputs_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+
+    "PolicyAdmissibility": {
+      "allOf": [
+        { "$ref": "#/definitions/Policy" },
+        {
+          "type": "object",
+          "required": ["policy_set_hash", "execution_intent_hash"],
+          "description": "Admissibility tokens MUST bind policy bundle and execution intent."
+        }
+      ]
+    },
+
+    "Evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "allOf": [
+        {
+          "if": { "required": ["human_decision"] },
+          "then": { "required": ["human_decision_timestamp"] }
+        },
+        {
+          "if": {
+            "properties": { "llm_judge_used": { "const": true } },
+            "required": ["llm_judge_used"]
+          },
+          "then": { "required": ["llm_judge_model"] }
+        }
+      ],
+      "properties": {
+        "human_involved": { "type": "boolean" },
+        "human_decision": {
+          "type": "string",
+          "enum": ["approved", "rejected", "modified"]
+        },
+        "human_decision_timestamp": { "type": "string", "format": "date-time" },
+        "human_role": { "type": "string" },
+        "llm_judge_used": { "type": "boolean" },
+        "llm_judge_model": { "type": "string" },
+        "llm_judge_score": { "type": "number", "minimum": 0, "maximum": 1 },
+        "evaluation_notes_ref": { "type": "string" },
+        "override_ticket_id": {
+          "type": "string",
+          "description": "Ticket id for supervised_override or break-glass."
+        }
+      }
+    },
+
+    "ToolCall": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "tool_id": { "type": "string" },
+        "call_id": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["executed", "blocked", "not_executed_due_to_escalation", "failed"]
+        }
+      }
+    },
+
+    "IoRefs": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "allOf": [
+        {
+          "if": { "required": ["input_ref"] },
+          "then": { "required": ["input_sha256"] }
+        },
+        {
+          "if": { "required": ["output_ref"] },
+          "then": { "required": ["output_sha256"] }
+        }
+      ],
+      "properties": {
+        "input_ref": { "type": "string" },
+        "input_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "input_hash_algorithm": { "type": "string", "enum": ["sha256"] },
+        "output_ref": { "type": "string" },
+        "output_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "output_hash_algorithm": { "type": "string", "enum": ["sha256"] },
+        "tool_calls": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ToolCall" }
+        }
+      }
+    },
+
+    "Outcome": {
+      "type": "object",
+      "required": ["status", "enforcement_component"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["success", "failure", "pending_approval", "blocked", "timeout"]
+        },
+        "enforcement_component": { "type": "string" },
+        "error_code": { "type": "string" },
+        "blocking_reason": {
+          "type": "string",
+          "enum": [
+            "policy_violation",
+            "trust_score_below_threshold",
+            "human_escalation_required",
+            "dual_control_required",
+            "geo_restriction",
+            "time_window_restriction",
+            "rate_limit_exceeded",
+            "capability_not_authorized",
+            "pii_exposure_blocked",
+            "policy_eval_timeout",
+            "missing_approval",
+            "shadow_ai_detected",
+            "unauthorized_ai_tool"
+          ]
+        }
+      }
+    },
+
+    "SecretsHygiene": {
+      "type": "object",
+      "description": "Credential and secret handling claims.",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "credential_freshness": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last rotation or attestation time for credentials used."
+        },
+        "vault_source_only": {
+          "type": "boolean",
+          "description": "Secrets sourced only from approved vault."
+        }
+      }
+    },
+
+    "DependencyAttestation": {
+      "type": "object",
+      "description": "Signed attestation for a tool, plugin, or dependency.",
+      "required": ["component_id"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "component_id": { "type": "string" },
+        "version": { "type": "string" },
+        "attestation_ref": { "type": "string", "format": "uri" },
+        "attestation_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "signer_id": { "type": "string" }
+      }
+    },
+
+    "SignatureAdmissibility": {
+      "type": "object",
+      "description": "PEP signs the admissibility token; signer_type MUST be enforcement.",
+      "required": ["algorithm", "value", "signer_id", "signer_type", "signed_fields", "signing_canonical_method"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": ["Ed25519", "ECDSA-P256", "ECDSA-P384"]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "signer_id": { "type": "string" },
+        "signer_type": {
+          "type": "string",
+          "const": "enforcement",
+          "description": "Admissibility tokens MUST be signed by PEP (enforcement)."
+        },
+        "signed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(/([^/~]|~0|~1)*)+$"
+          },
+          "minItems": 1,
+          "allOf": [
+            { "contains": { "const": "/spec_id" } },
+            { "contains": { "const": "/artifact_type" } },
+            { "contains": { "const": "/event_id" } },
+            { "contains": { "const": "/timestamp" } },
+            { "contains": { "const": "/tenant_id" } },
+            { "contains": { "const": "/valid_from" } },
+            { "contains": { "const": "/valid_until" } },
+            { "contains": { "const": "/nonce" } },
+            { "contains": { "const": "/actor" } },
+            { "contains": { "const": "/asset" } },
+            { "contains": { "const": "/authority" } },
+            { "contains": { "const": "/risk" } },
+            { "contains": { "const": "/capability" } },
+            { "contains": { "const": "/context" } },
+            { "contains": { "const": "/policy" } },
+            { "contains": { "const": "/data_boundaries" } },
+            { "contains": { "const": "/liability" } }
+          ]
+        },
+        "signing_canonical_method": { "type": "string", "const": "RFC8785" }
+      }
+    },
+
+    "SignatureReceipt": {
+      "type": "object",
+      "description": "Execution receipt: enforcement or control_plane countersign.",
+      "required": ["algorithm", "value", "signer_id", "signer_type", "signed_fields", "signing_canonical_method"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": ["Ed25519", "ECDSA-P256", "ECDSA-P384"]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "signer_id": { "type": "string" },
+        "signer_type": {
+          "type": "string",
+          "enum": ["enforcement", "control_plane", "detection"]
+        },
+        "signed_fields": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(/([^/~]|~0|~1)*)+$"
+          },
+          "minItems": 1,
+          "allOf": [
+            { "contains": { "const": "/spec_id" } },
+            { "contains": { "const": "/artifact_type" } },
+            { "contains": { "const": "/event_id" } },
+            { "contains": { "const": "/timestamp" } },
+            { "contains": { "const": "/tenant_id" } },
+            { "contains": { "const": "/actor" } },
+            { "contains": { "const": "/capability" } },
+            { "contains": { "const": "/context" } },
+            { "contains": { "const": "/policy" } },
+            { "contains": { "const": "/outcome" } },
+            { "contains": { "const": "/admissibility_event_id" } }
+          ]
+        },
+        "signing_canonical_method": { "type": "string", "const": "RFC8785" }
+      }
+    },
+
+    "Classification": {
+      "type": "object",
+      "required": ["framework", "version", "category"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "framework": { "const": "eu_ai_act" },
+              "category": { "const": "high_risk" }
+            },
+            "required": ["framework", "category"]
+          },
+          "then": {
+            "required": ["annex_iii_use_case"],
+            "properties": {
+              "annex_iii_use_case": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "framework": { "type": "string" },
+        "version": { "type": "string" },
+        "category": { "type": "string" },
+        "article_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "profile_ref": { "type": "string" },
+        "jurisdiction": { "type": "string" },
+        "annex_iii_use_case": { "type": "string" }
+      }
+    },
+
+    "RegulatoryFlag": {
+      "type": "object",
+      "required": ["framework", "flag"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "framework": { "type": "string" },
+        "flag": { "type": "string" },
+        "jurisdiction": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+
+    "Detection": {
+      "type": "object",
+      "required": ["detection_method", "action_completed"],
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "detection_method": {
+          "type": "string",
+          "enum": [
+            "network_proxy",
+            "dlp_scan",
+            "endpoint_agent",
+            "ueba_anomaly",
+            "browser_extension",
+            "user_report",
+            "telemetry_shadow"
+          ]
+        },
+        "action_completed": { "type": "boolean" },
+        "detection_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "unauthorized_tool": { "type": "string" },
+        "data_classification_exposed": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted", "pii", "trade_secret", "unknown"]
+        },
+        "remediation_status": {
+          "type": "string",
+          "enum": ["none", "approve", "conditional", "migrate", "decommission", "pending"]
+        },
+        "remediation_due_date": { "type": "string", "format": "date-time" },
+        "remediation_owner": { "type": "string", "description": "Role or group id (not personal name)." },
+        "remediation_reviewer": { "type": "string" },
+        "converted_to_governed_asset_id": {
+          "type": "string",
+          "description": "New asset/agent id after approve-and-register."
+        },
+        "enforcement_tier_after_registration": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        }
+      }
+    },
+
+    "Regulatory": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "properties": {
+        "classifications": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/Classification" }
+        },
+        "flags": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/RegulatoryFlag" }
+        }
+      }
+    },
+    "ExtensionIds": {
+      "type": "array",
+      "description": "Registered extension identifiers enabled for this envelope.",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9._-]*$"
+      },
+      "uniqueItems": true
+    },
+    "ExtensionsObject": {
+      "type": "object",
+      "description": "Namespaced extension data. Keys MUST use reverse DNS style namespaces.",
+      "propertyNames": {
+        "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z][a-z0-9-]{1,63}$"
+      },
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
+
+    "AdmissibilityToken": {
+      "type": "object",
+      "description": "Pre-execution PEP decision: no execution outcome, no io_refs. Arbitrary vendor extensions use keys matching ^x-.",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "required": [
+        "spec_id",
+        "artifact_type",
+        "event_id",
+        "timestamp",
+        "tenant_id",
+        "valid_from",
+        "valid_until",
+        "nonce",
+        "actor",
+        "asset",
+        "authority",
+        "risk",
+        "capability",
+        "context",
+        "policy",
+        "data_boundaries",
+        "liability",
+        "signature"
+      ],
+      "properties": {
+        "spec_id": {
+          "type": "string",
+          "const": "aurelianaegis.envelope.v1",
+          "description": "Stable spec era for this envelope. Unchanged across additive schema releases; only changes on a breaking spec migration."
+        },
+        "artifact_type": {
+          "allOf": [{ "$ref": "#/definitions/ArtifactType" }, { "const": "admissibility_token" }]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^urn:aurelianaegis:event:[a-zA-Z0-9_-]+:[a-fA-F0-9-]{36}$"
+        },
+        "schema_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional schema/convention URL for OTel-style schema identity resolution."
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "tenant_id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{3,64}$"
+        },
+        "valid_from": { "type": "string", "format": "date-time" },
+        "valid_until": { "type": "string", "format": "date-time" },
+        "nonce": {
+          "type": "string",
+          "minLength": 8,
+          "description": "Unique one-time value for replay protection (JWT jti style)."
+        },
+        "actor": { "$ref": "#/definitions/Actor" },
+        "asset": { "$ref": "#/definitions/Asset" },
+        "authority": { "$ref": "#/definitions/Authority" },
+        "risk": { "$ref": "#/definitions/Risk" },
+        "capability": { "$ref": "#/definitions/Capability" },
+        "context": { "$ref": "#/definitions/Context" },
+        "policy": { "$ref": "#/definitions/PolicyAdmissibility" },
+        "data_boundaries": { "$ref": "#/definitions/DataBoundaries" },
+        "liability": { "$ref": "#/definitions/Liability" },
+        "secrets_hygiene": { "$ref": "#/definitions/SecretsHygiene" },
+        "dependency_attestations": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/DependencyAttestation" }
+        },
+        "regulatory": { "$ref": "#/definitions/Regulatory" },
+        "x-risk-category": {
+          "type": "string",
+          "enum": ["operational", "cost", "quality", "policy", "scope", "regulatory"]
+        },
+        "x-domain-risk": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.-]+\\.[a-zA-Z0-9_.-]+(\\.[a-zA-Z0-9_.-]+)*$"
+        },
+        "x-legal": { "$ref": "#/definitions/LegalExtensions" },
+        "profile_id": {
+          "type": "string",
+          "description": "Profile bundle identifier that defines extension requirements."
+        },
+        "extension_ids": { "$ref": "#/definitions/ExtensionIds" },
+        "extensions_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Digest over canonicalized extensions object when extension integrity is bound via digest."
+        },
+        "extensions": { "$ref": "#/definitions/ExtensionsObject" },
+        "signature": { "$ref": "#/definitions/SignatureAdmissibility" }
+      }
+    },
+
+    "ExecutionReceipt": {
+      "type": "object",
+      "description": "Post-execution receipt; references admissibility token by admissibility_event_id. Arbitrary vendor extensions use keys matching ^x-.",
+      "additionalProperties": false,
+      "patternProperties": { "^x-[a-zA-Z0-9_.-]+$": {} },
+      "allOf": [
+        {
+          "if": { "required": ["previous_event_hash"] },
+          "then": {
+            "type": "object",
+            "properties": {
+              "signature": {
+                "type": "object",
+                "required": ["signed_fields"],
+                "properties": {
+                  "signed_fields": {
+                    "type": "array",
+                    "contains": { "const": "/previous_event_hash" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "required": ["parent_event_id"] },
+          "then": {
+            "type": "object",
+            "properties": {
+              "signature": {
+                "type": "object",
+                "required": ["signed_fields"],
+                "properties": {
+                  "signed_fields": {
+                    "type": "array",
+                    "contains": { "const": "/parent_event_id" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": { "required": ["sequence_number"] },
+          "then": {
+            "type": "object",
+            "properties": {
+              "signature": {
+                "type": "object",
+                "required": ["signed_fields"],
+                "properties": {
+                  "signed_fields": {
+                    "type": "array",
+                    "contains": { "const": "/sequence_number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "required": [
+        "spec_id",
+        "artifact_type",
+        "event_id",
+        "timestamp",
+        "tenant_id",
+        "admissibility_event_id",
+        "actor",
+        "capability",
+        "context",
+        "policy",
+        "outcome",
+        "signature"
+      ],
+      "properties": {
+        "spec_id": {
+          "type": "string",
+          "const": "aurelianaegis.envelope.v1",
+          "description": "Stable spec era for this envelope. Unchanged across additive schema releases."
+        },
+        "artifact_type": {
+          "allOf": [{ "$ref": "#/definitions/ArtifactType" }, { "const": "execution_receipt" }]
+        },
+        "event_id": {
+          "type": "string",
+          "pattern": "^urn:aurelianaegis:event:[a-zA-Z0-9_-]+:[a-fA-F0-9-]{36}$"
+        },
+        "schema_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Optional schema/convention URL for OTel-style schema identity resolution."
+        },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "tenant_id": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]{3,64}$"
+        },
+        "valid_from": { "type": "string", "format": "date-time" },
+        "valid_until": { "type": "string", "format": "date-time" },
+        "admissibility_event_id": {
+          "type": "string",
+          "pattern": "^urn:aurelianaegis:event:[a-zA-Z0-9_-]+:[a-fA-F0-9-]{36}$",
+          "description": "event_id of the admissibility token authorizing this execution."
+        },
+        "admissibility_token_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 of canonical admissibility token (optional bind)."
+        },
+        "parent_event_id": {
+          "type": "string",
+          "pattern": "^urn:aurelianaegis:event:[a-zA-Z0-9_-]+:[a-fA-F0-9-]{36}$"
+        },
+        "root_event_id": {
+          "type": "string",
+          "pattern": "^urn:aurelianaegis:event:[a-zA-Z0-9_-]+:[a-fA-F0-9-]{36}$"
+        },
+        "previous_event_hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "sequence_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "actor": { "$ref": "#/definitions/Actor" },
+        "asset": { "$ref": "#/definitions/Asset" },
+        "authority": { "$ref": "#/definitions/Authority" },
+        "risk": { "$ref": "#/definitions/Risk" },
+        "capability": { "$ref": "#/definitions/Capability" },
+        "context": { "$ref": "#/definitions/Context" },
+        "policy": { "$ref": "#/definitions/Policy" },
+        "data_boundaries": { "$ref": "#/definitions/DataBoundaries" },
+        "liability": { "$ref": "#/definitions/Liability" },
+        "evaluation": { "$ref": "#/definitions/Evaluation" },
+        "io_refs": { "$ref": "#/definitions/IoRefs" },
+        "outcome": { "$ref": "#/definitions/Outcome" },
+        "detection": { "$ref": "#/definitions/Detection" },
+        "secrets_hygiene": { "$ref": "#/definitions/SecretsHygiene" },
+        "dependency_attestations": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/DependencyAttestation" }
+        },
+        "regulatory": { "$ref": "#/definitions/Regulatory" },
+        "x-risk-category": {
+          "type": "string",
+          "enum": ["operational", "cost", "quality", "policy", "scope", "regulatory"]
+        },
+        "x-domain-risk": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_.-]+\\.[a-zA-Z0-9_.-]+(\\.[a-zA-Z0-9_.-]+)*$"
+        },
+        "x-legal": { "$ref": "#/definitions/LegalExtensions" },
+        "profile_id": {
+          "type": "string",
+          "description": "Profile bundle identifier that defines extension requirements."
+        },
+        "extension_ids": { "$ref": "#/definitions/ExtensionIds" },
+        "extensions_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$",
+          "description": "Digest over canonicalized extensions object when extension integrity is bound via digest."
+        },
+        "extensions": { "$ref": "#/definitions/ExtensionsObject" },
+        "signature": { "$ref": "#/definitions/SignatureReceipt" }
+      }
+    }
+  }
+}

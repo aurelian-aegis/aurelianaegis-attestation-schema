@@ -1,0 +1,13 @@
+{
+  "extensions": {
+    "io.aurelianaegis.ext.finance-risk-controls": {
+      "approval_band": "high_value",
+      "control_mode": "dual_control",
+      "risk_weight": 0.7
+    },
+    "io.example.audit": {
+      "control_id": "A-17"
+    }
+  },
+  "expected_extensions_digest": "sha256:fe101cad5e930d87a26d8798887b4860e7291e784866b2029b4390dae5719d04"
+}

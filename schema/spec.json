@@ -1,0 +1,6 @@
+{
+  "spec_id": "aurelianaegis.envelope.v1",
+  "schema_id": "https://aurelianaegis.io/schema/attestation-envelope.json",
+  "schema_file": "attestation-envelope.json",
+  "note": "spec_id is stable across additive JSON Schema releases. Implementations SHOULD NOT branch behavior on release tags; validate against schema/attestation-envelope.json (or packaged copy). Breaking spec changes would introduce aurelianaegis.envelope.v2 and a new schema document."
+}

@@ -1,0 +1,24 @@
+{
+  "name": "minimal-ecdsa-p256",
+  "algorithm": "ECDSA-P256",
+  "key_material": {
+    "private_key_pem_path": "test-vectors/keys/ecdsa-p256-test-private.pem",
+    "public_key_pem_path": "test-vectors/keys/ecdsa-p256-test-public.pem",
+    "warning": "TEST KEY ONLY. Never use this key in production."
+  },
+  "payload_object": {
+    "/actor": {
+      "agent_id": "urn:aurelianaegis:agent:acme:test-ecdsa",
+      "passport_hash": "sha256:b1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+    },
+    "/event_id": "urn:aurelianaegis:event:tenant:22345678-1234-1234-1234-123456789012",
+    "/spec_id": "aurelianaegis.envelope.v1"
+  },
+  "expected": {
+    "canonical_json": "{\"/actor\":{\"agent_id\":\"urn:aurelianaegis:agent:acme:test-ecdsa\",\"passport_hash\":\"sha256:b1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2\"},\"/event_id\":\"urn:aurelianaegis:event:tenant:22345678-1234-1234-1234-123456789012\",\"/spec_id\":\"aurelianaegis.envelope.v1\"}",
+    "canonical_hex": "7b222f6163746f72223a7b226167656e745f6964223a2275726e3a617572656c69616e61656769733a6167656e743a61636d653a746573742d6563647361222c2270617373706f72745f68617368223a227368613235363a62316232633364346535663661376238633964306531663261336234633564366537663861396230633164326533663461356236633764386539663061316232227d2c222f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a32323334353637382d313233342d313233342d313233342d313233343536373839303132222c222f737065635f6964223a22617572656c69616e61656769732e656e76656c6f70652e7631227d",
+    "signature_base64url": "ML-pnvZ0KdtTUkliLIu5EL_Nw8OzD_TE9dK25Pwu4sKXynoacZc_Wxj8j7wPPswKCRRK7pdMfowfDjgUEEtUJg",
+    "signature_encoding": "raw_p1363",
+    "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwEwAIl3Av2slfGTULk3F/ktcR7c6\nFwBPRTwf8URP2w4Bxl8B5Ag5E69VJUuxdRJ5wHnDz7sOeUZ9L1HZwlPMTQ==\n-----END PUBLIC KEY-----\n"
+  }
+}

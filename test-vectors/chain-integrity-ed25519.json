@@ -1,0 +1,75 @@
+{
+  "name": "chain-integrity-ed25519",
+  "description": "Chain fields on execution_receipt: sequence_number + previous_event_hash + envelope headers.",
+  "algorithm": "Ed25519",
+  "key_material": {
+    "private_key_pem_path": "test-vectors/keys/ed25519-test-private-key.pem",
+    "public_key_pem_path": "test-vectors/keys/ed25519-test-public-key.pem",
+    "warning": "TEST KEY ONLY. Never use this key in production."
+  },
+  "signed_fields": [
+    "/actor",
+    "/event_id",
+    "/previous_event_hash",
+    "/spec_id",
+    "/artifact_type",
+    "/admissibility_event_id",
+    "/sequence_number",
+    "/tenant_id"
+  ],
+  "envelope": {
+    "spec_id": "aurelianaegis.envelope.v1",
+    "artifact_type": "execution_receipt",
+    "event_id": "urn:aurelianaegis:event:tenant:52345678-1234-1234-1234-123456789012",
+    "timestamp": "2026-02-26T16:00:00.000Z",
+    "tenant_id": "tenant_acme_corp",
+    "admissibility_event_id": "urn:aurelianaegis:event:tenant:52345678-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+    "sequence_number": 2,
+    "previous_event_hash": "sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+    "actor": {
+      "agent_id": "urn:aurelianaegis:agent:acme:payment-bot-001",
+      "passport_hash": "sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+    },
+    "capability": {
+      "id": "finance.approve_payment",
+      "domain": "finance.payments"
+    },
+    "context": {
+      "correlation_id": "corr_chain_test_001"
+    },
+    "policy": {
+      "governance_profile_id": "gp_payments_dual_control",
+      "decision": "allow"
+    },
+    "outcome": {
+      "status": "success",
+      "enforcement_component": "sdk-openai-v0.2.1"
+    },
+    "signature": {
+      "algorithm": "Ed25519",
+      "value": "GbJgQRdp1ACS6IJZ3K1AGF77QLXbk_RhtYBpUSVYYdVq43R0V2iat5LcMaJ9f8xUAstVjCD_cgmipmQEXyNOCg",
+      "signer_id": "sdk-openai-v0.2.1",
+      "signer_type": "enforcement",
+      "signed_fields": [
+        "/actor",
+        "/event_id",
+        "/previous_event_hash",
+        "/spec_id",
+        "/artifact_type",
+        "/admissibility_event_id",
+        "/sequence_number",
+        "/tenant_id"
+      ],
+      "signing_canonical_method": "RFC8785"
+    }
+  },
+  "notes": [
+    "Signed payload excludes capability/context/policy/outcome when not listed — only listed pointers are canonicalized (matches SIGNING subset style)."
+  ],
+  "expected": {
+    "canonical_json": "{\"/actor\":{\"agent_id\":\"urn:aurelianaegis:agent:acme:payment-bot-001\",\"passport_hash\":\"sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2\"},\"/admissibility_event_id\":\"urn:aurelianaegis:event:tenant:52345678-bbbb-bbbb-bbbb-bbbbbbbbbbbb\",\"/artifact_type\":\"execution_receipt\",\"/event_id\":\"urn:aurelianaegis:event:tenant:52345678-1234-1234-1234-123456789012\",\"/previous_event_hash\":\"sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2\",\"/sequence_number\":2,\"/spec_id\":\"aurelianaegis.envelope.v1\",\"/tenant_id\":\"tenant_acme_corp\"}",
+    "canonical_hex": "7b222f6163746f72223a7b226167656e745f6964223a2275726e3a617572656c69616e61656769733a6167656e743a61636d653a7061796d656e742d626f742d303031222c2270617373706f72745f68617368223a227368613235363a61316232633364346535663661376238633964306531663261336234633564366537663861396230633164326533663461356236633764386539663061316232227d2c222f61646d6973736962696c6974795f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a35323334353637382d626262622d626262622d626262622d626262626262626262626262222c222f61727469666163745f74797065223a22657865637574696f6e5f72656365697074222c222f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a35323334353637382d313233342d313233342d313233342d313233343536373839303132222c222f70726576696f75735f6576656e745f68617368223a227368613235363a61316232633364346535663661376238633964306531663261336234633564366537663861396230633164326533663461356236633764386539663061316232222c222f73657175656e63655f6e756d626572223a322c222f737065635f6964223a22617572656c69616e61656769732e656e76656c6f70652e7631222c222f74656e616e745f6964223a2274656e616e745f61636d655f636f7270227d",
+    "signature_base64url": "GbJgQRdp1ACS6IJZ3K1AGF77QLXbk_RhtYBpUSVYYdVq43R0V2iat5LcMaJ9f8xUAstVjCD_cgmipmQEXyNOCg",
+    "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEArJe9+FjUDs5HxS3cCYSXAv1kfAgswaHKT77yZPIbmQ0=\n-----END PUBLIC KEY-----\n"
+  }
+}

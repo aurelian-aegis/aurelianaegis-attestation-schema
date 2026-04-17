@@ -1,0 +1,74 @@
+{
+  "spec_id": "aurelianaegis.envelope.v1",
+  "artifact_type": "execution_receipt",
+  "event_id": "urn:aurelianaegis:event:tenant:82345678-1234-1234-1234-123456789012",
+  "timestamp": "2026-04-14T09:47:22.000Z",
+  "tenant_id": "tenant_acme_corp",
+  "admissibility_event_id": "urn:aurelianaegis:event:tenant:c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "sequence_number": 1,
+  "actor": {
+    "agent_id": "urn:shadow:chatgpt:acme:user-emp-8821",
+    "registration_status": "unregistered"
+  },
+  "capability": {
+    "id": "shadow.external_ai.prompt_submission",
+    "domain": "shadow.ai",
+    "contains_pii": false,
+    "redaction_policy": "none",
+    "is_state_mutating": false
+  },
+  "context": {
+    "correlation_id": "corr_shadow_proxy_001",
+    "session_id": "sess_proxy_20260414_001",
+    "user": {
+      "type": "employee",
+      "id": "emp-8821"
+    },
+    "channel": "web_portal",
+    "telemetry": {
+      "latency_ms": 3
+    }
+  },
+  "policy": {
+    "governance_profile_id": "gp_shadow_ai_block_all",
+    "risk_tier": "high",
+    "oversight_mode": "autonomous",
+    "decision": "deny",
+    "violation_flags": ["shadow_ai_detected", "data_exfiltration_risk"]
+  },
+  "profile_id": "io.aurelianaegis.profile.high-assurance-regulated",
+  "detection": {
+    "detection_method": "network_proxy",
+    "action_completed": false,
+    "detection_confidence": 1.0,
+    "unauthorized_tool": "chatgpt",
+    "data_classification_exposed": "confidential"
+  },
+  "outcome": {
+    "status": "blocked",
+    "enforcement_component": "dlp-proxy-v2.1.0",
+    "blocking_reason": "unauthorized_ai_tool"
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "value": "Jb4kOkIKgGfZATUpL92_GlmLYsJ_TOR756bZR0quR7bqguWSnCWq8y70tXnyQV-Gw-WJmn6Jrk2QcjwuSixoCg",
+    "signer_id": "dlp-proxy-v2.1.0",
+    "signer_type": "detection",
+    "signed_fields": [
+      "/spec_id",
+      "/artifact_type",
+      "/event_id",
+      "/timestamp",
+      "/tenant_id",
+      "/admissibility_event_id",
+      "/sequence_number",
+      "/actor",
+      "/capability",
+      "/context",
+      "/detection",
+      "/policy",
+      "/outcome"
+    ],
+    "signing_canonical_method": "RFC8785"
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "spec_id": "aurelianaegis.envelope.v1",
+  "artifact_type": "execution_receipt",
+  "event_id": "urn:aurelianaegis:event:tenant:b4c3d2e1-f6a7-8901-bcde-f23456789012",
+  "timestamp": "2026-02-25T14:30:01.456Z",
+  "tenant_id": "tenant_acme_corp",
+  "admissibility_event_id": "urn:aurelianaegis:event:tenant:b2c3d4e5-f6a7-8901-bcde-f12345678902",
+  "parent_event_id": "urn:aurelianaegis:event:tenant:a3b2c1d4-e5f6-7890-abcd-ef1234567890",
+  "root_event_id": "urn:aurelianaegis:event:tenant:a3b2c1d4-e5f6-7890-abcd-ef1234567890",
+  "sequence_number": 2,
+  "previous_event_hash": "sha256:a3f2c8b1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
+  "actor": {
+    "agent_id": "urn:aurelianaegis:agent:acme:payment-executor-002",
+    "external_id": "did:web:agents.acme-corp.com:payment-executor-002",
+    "passport_hash": "sha256:b4e3d2c1f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2",
+    "passport_registry_ref": "https://registry.aurelianaegis.io/passports/urn:aurelianaegis:agent:acme:payment-executor-002/v1.0.0",
+    "agent_version": "1.0.0",
+    "runtime": {
+      "type": "aws_bedrock",
+      "runtime_id": "asst_def456",
+      "region": "us-east-1"
+    }
+  },
+  "capability": {
+    "id": "finance.execute_payment",
+    "domain": "finance.payments",
+    "parameters": {
+      "amount_usd": 5000,
+      "recipient_id_hash": "sha256:redacted"
+    },
+    "contains_pii": true,
+    "redaction_policy": "hash_sensitive_only",
+    "is_state_mutating": true
+  },
+  "context": {
+    "correlation_id": "corr_01HXYZ789",
+    "session_id": "sess_01HXYZ456",
+    "user": {
+      "type": "employee",
+      "id": "user_12345",
+      "segment": "enterprise"
+    },
+    "channel": "api",
+    "request_id": "req_abc123",
+    "telemetry": {
+      "latency_ms": 8
+    }
+  },
+  "policy": {
+    "governance_profile_id": "gp_payments_dual_control",
+    "risk_tier": "high",
+    "oversight_mode": "dual_control",
+    "trust_scores": {
+      "overall": 0.91,
+      "capability": 0.95
+    },
+    "trust_score_model": "https://aurelianaegis.io/trust-models/v1",
+    "trust_score_version": "1.0",
+    "decision": "allow",
+    "violation_flags": []
+  },
+  "profile_id": "io.aurelianaegis.profile.baseline-governed",
+  "outcome": {
+    "status": "success",
+    "enforcement_component": "sdk-openai-v0.2.1"
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "value": "zEnPosugZ5xg65MqIN9yvNhCDDJxYUumarm9GxC5r4Z4zLzjStC7a9KT3Cqvv8NPR-mY5lfD_UOlH40YfD8MDw",
+    "signer_id": "sdk-openai-v0.2.1",
+    "signer_type": "enforcement",
+    "signed_fields": [
+      "/spec_id",
+      "/artifact_type",
+      "/event_id",
+      "/timestamp",
+      "/tenant_id",
+      "/admissibility_event_id",
+      "/parent_event_id",
+      "/root_event_id",
+      "/sequence_number",
+      "/previous_event_hash",
+      "/actor",
+      "/capability",
+      "/context",
+      "/policy",
+      "/outcome"
+    ],
+    "signing_canonical_method": "RFC8785"
+  },
+  "regulatory": {
+    "classifications": [
+      {
+        "framework": "eu_ai_act",
+        "version": "2024",
+        "category": "limited_risk",
+        "article_refs": ["Article 52"],
+        "jurisdiction": "eu"
+      }
+    ],
+    "flags": [
+      {
+        "framework": "sox",
+        "flag": "financial_control_relevant",
+        "jurisdiction": "us_federal"
+      }
+    ]
+  }
+}

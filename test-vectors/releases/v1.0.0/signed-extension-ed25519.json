@@ -1,0 +1,84 @@
+{
+  "name": "signed-extension-ed25519",
+  "description": "Execution receipt with decision-relevant extension data cryptographically bound via /extensions pointer.",
+  "algorithm": "Ed25519",
+  "key_material": {
+    "private_key_pem_path": "test-vectors/keys/ed25519-test-private-key.pem",
+    "public_key_pem_path": "test-vectors/keys/ed25519-test-public-key.pem",
+    "warning": "TEST KEY ONLY. Never use this key in production."
+  },
+  "signed_fields": [
+    "/spec_id",
+    "/artifact_type",
+    "/event_id",
+    "/timestamp",
+    "/tenant_id",
+    "/admissibility_event_id",
+    "/actor",
+    "/capability",
+    "/context",
+    "/policy",
+    "/extensions",
+    "/outcome"
+  ],
+  "envelope": {
+    "spec_id": "aurelianaegis.envelope.v1",
+    "artifact_type": "execution_receipt",
+    "event_id": "urn:aurelianaegis:event:tenant:77777777-7777-4777-8777-777777777777",
+    "timestamp": "2026-04-16T11:00:00.000Z",
+    "tenant_id": "tenant_ext",
+    "admissibility_event_id": "urn:aurelianaegis:event:tenant:88888888-8888-4888-8888-888888888888",
+    "actor": {
+      "agent_id": "urn:aurelianaegis:agent:ext:bot-001",
+      "passport_hash": "sha256:d1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+    },
+    "capability": {
+      "id": "finance.approve_payment",
+      "domain": "finance.payments"
+    },
+    "context": {
+      "correlation_id": "corr-ext-001"
+    },
+    "policy": {
+      "governance_profile_id": "gp-ext",
+      "decision": "allow"
+    },
+    "extensions": {
+      "io.aurelianaegis.ext.finance-risk-controls": {
+        "approval_band": "high_value",
+        "control_mode": "dual_control"
+      }
+    },
+    "outcome": {
+      "status": "success",
+      "enforcement_component": "sdk-ext-v1"
+    },
+    "signature": {
+      "algorithm": "Ed25519",
+      "value": "VtAZqbeiKBAqXamazACcSb8t7tlakx8mGnPpxuOWyKS6H3rfyFu3DeTch-dti6IRLAQaQhTjBYn1id262lTaAw",
+      "signer_id": "sdk-ext-v1",
+      "signer_type": "enforcement",
+      "signed_fields": [
+        "/spec_id",
+        "/artifact_type",
+        "/event_id",
+        "/timestamp",
+        "/tenant_id",
+        "/admissibility_event_id",
+        "/actor",
+        "/capability",
+        "/context",
+        "/policy",
+        "/extensions",
+        "/outcome"
+      ],
+      "signing_canonical_method": "RFC8785"
+    }
+  },
+  "expected": {
+    "canonical_json": "{\"/actor\":{\"agent_id\":\"urn:aurelianaegis:agent:ext:bot-001\",\"passport_hash\":\"sha256:d1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2\"},\"/admissibility_event_id\":\"urn:aurelianaegis:event:tenant:88888888-8888-4888-8888-888888888888\",\"/artifact_type\":\"execution_receipt\",\"/capability\":{\"domain\":\"finance.payments\",\"id\":\"finance.approve_payment\"},\"/context\":{\"correlation_id\":\"corr-ext-001\"},\"/event_id\":\"urn:aurelianaegis:event:tenant:77777777-7777-4777-8777-777777777777\",\"/extensions\":{\"io.aurelianaegis.ext.finance-risk-controls\":{\"approval_band\":\"high_value\",\"control_mode\":\"dual_control\"}},\"/outcome\":{\"enforcement_component\":\"sdk-ext-v1\",\"status\":\"success\"},\"/policy\":{\"decision\":\"allow\",\"governance_profile_id\":\"gp-ext\"},\"/spec_id\":\"aurelianaegis.envelope.v1\",\"/tenant_id\":\"tenant_ext\",\"/timestamp\":\"2026-04-16T11:00:00.000Z\"}",
+    "canonical_hex": "7b222f6163746f72223a7b226167656e745f6964223a2275726e3a617572656c69616e61656769733a6167656e743a6578743a626f742d303031222c2270617373706f72745f68617368223a227368613235363a64316232633364346535663661376238633964306531663261336234633564366537663861396230633164326533663461356236633764386539663061316232227d2c222f61646d6973736962696c6974795f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a38383838383838382d383838382d343838382d383838382d383838383838383838383838222c222f61727469666163745f74797065223a22657865637574696f6e5f72656365697074222c222f6361706162696c697479223a7b22646f6d61696e223a2266696e616e63652e7061796d656e7473222c226964223a2266696e616e63652e617070726f76655f7061796d656e74227d2c222f636f6e74657874223a7b22636f7272656c6174696f6e5f6964223a22636f72722d6578742d303031227d2c222f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a37373737373737372d373737372d343737372d383737372d373737373737373737373737222c222f657874656e73696f6e73223a7b22696f2e617572656c69616e61656769732e6578742e66696e616e63652d7269736b2d636f6e74726f6c73223a7b22617070726f76616c5f62616e64223a22686967685f76616c7565222c22636f6e74726f6c5f6d6f6465223a226475616c5f636f6e74726f6c227d7d2c222f6f7574636f6d65223a7b22656e666f7263656d656e745f636f6d706f6e656e74223a2273646b2d6578742d7631222c22737461747573223a2273756363657373227d2c222f706f6c696379223a7b226465636973696f6e223a22616c6c6f77222c22676f7665726e616e63655f70726f66696c655f6964223a2267702d657874227d2c222f737065635f6964223a22617572656c69616e61656769732e656e76656c6f70652e7631222c222f74656e616e745f6964223a2274656e616e745f657874222c222f74696d657374616d70223a22323032362d30342d31365431313a30303a30302e3030305a227d",
+    "signature_base64url": "VtAZqbeiKBAqXamazACcSb8t7tlakx8mGnPpxuOWyKS6H3rfyFu3DeTch-dti6IRLAQaQhTjBYn1id262lTaAw",
+    "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEArJe9+FjUDs5HxS3cCYSXAv1kfAgswaHKT77yZPIbmQ0=\n-----END PUBLIC KEY-----\n"
+  }
+}

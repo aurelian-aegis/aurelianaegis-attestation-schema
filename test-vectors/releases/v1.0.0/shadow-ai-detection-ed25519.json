@@ -1,0 +1,98 @@
+{
+  "name": "shadow-ai-detection-ed25519",
+  "description": "Shadow AI detection as execution_receipt; signer_type=detection.",
+  "algorithm": "Ed25519",
+  "key_material": {
+    "private_key_pem_path": "test-vectors/keys/ed25519-test-private-key.pem",
+    "public_key_pem_path": "test-vectors/keys/ed25519-test-public-key.pem",
+    "warning": "TEST KEY ONLY. Never use this key in production."
+  },
+  "signed_fields": [
+    "/actor",
+    "/capability",
+    "/context",
+    "/detection",
+    "/event_id",
+    "/outcome",
+    "/policy",
+    "/spec_id",
+    "/artifact_type",
+    "/admissibility_event_id",
+    "/sequence_number",
+    "/tenant_id"
+  ],
+  "envelope": {
+    "spec_id": "aurelianaegis.envelope.v1",
+    "artifact_type": "execution_receipt",
+    "event_id": "urn:aurelianaegis:event:tenant:82345678-1234-1234-1234-123456789012",
+    "timestamp": "2026-02-26T18:00:00.000Z",
+    "tenant_id": "tenant_acme_corp",
+    "admissibility_event_id": "urn:aurelianaegis:event:tenant:82345678-dddd-dddd-dddd-dddddddddddd",
+    "sequence_number": 1,
+    "actor": {
+      "agent_id": "urn:shadow:chatgpt:acme:user-emp-8821",
+      "registration_status": "unregistered"
+    },
+    "capability": {
+      "id": "shadow.external_ai.prompt_submission",
+      "domain": "shadow.ai"
+    },
+    "context": {
+      "correlation_id": "corr_shadow_proxy_001",
+      "user": {
+        "type": "employee",
+        "id": "emp-8821"
+      }
+    },
+    "detection": {
+      "detection_method": "network_proxy",
+      "action_completed": false,
+      "detection_confidence": 1,
+      "unauthorized_tool": "chatgpt",
+      "data_classification_exposed": "confidential"
+    },
+    "policy": {
+      "governance_profile_id": "gp_shadow_ai_block_all",
+      "decision": "deny",
+      "violation_flags": [
+        "shadow_ai_detected",
+        "data_exfiltration_risk"
+      ]
+    },
+    "outcome": {
+      "status": "blocked",
+      "enforcement_component": "dlp-proxy-v2.1.0",
+      "blocking_reason": "unauthorized_ai_tool"
+    },
+    "signature": {
+      "algorithm": "Ed25519",
+      "value": "69bLV_fgXy9nOi9pkiN1xSpVBsHKj7k9meftFUEqmjRJQLRQoOcMV8oVtubJontCPI2iKm4bYzNP7-7EBNbqAA",
+      "signer_id": "dlp-proxy-v2.1.0",
+      "signer_type": "detection",
+      "signed_fields": [
+        "/actor",
+        "/capability",
+        "/context",
+        "/detection",
+        "/event_id",
+        "/outcome",
+        "/policy",
+        "/spec_id",
+        "/artifact_type",
+        "/admissibility_event_id",
+        "/sequence_number",
+        "/tenant_id"
+      ],
+      "signing_canonical_method": "RFC8785"
+    }
+  },
+  "notes": [
+    "Synthetic admissibility_event_id for schema validity (shadow events may omit real PEP token in some deployments; this fixture includes a placeholder URN)."
+  ],
+  "expected": {
+    "canonical_json": "{\"/actor\":{\"agent_id\":\"urn:shadow:chatgpt:acme:user-emp-8821\",\"registration_status\":\"unregistered\"},\"/admissibility_event_id\":\"urn:aurelianaegis:event:tenant:82345678-dddd-dddd-dddd-dddddddddddd\",\"/artifact_type\":\"execution_receipt\",\"/capability\":{\"domain\":\"shadow.ai\",\"id\":\"shadow.external_ai.prompt_submission\"},\"/context\":{\"correlation_id\":\"corr_shadow_proxy_001\",\"user\":{\"id\":\"emp-8821\",\"type\":\"employee\"}},\"/detection\":{\"action_completed\":false,\"data_classification_exposed\":\"confidential\",\"detection_confidence\":1,\"detection_method\":\"network_proxy\",\"unauthorized_tool\":\"chatgpt\"},\"/event_id\":\"urn:aurelianaegis:event:tenant:82345678-1234-1234-1234-123456789012\",\"/outcome\":{\"blocking_reason\":\"unauthorized_ai_tool\",\"enforcement_component\":\"dlp-proxy-v2.1.0\",\"status\":\"blocked\"},\"/policy\":{\"decision\":\"deny\",\"governance_profile_id\":\"gp_shadow_ai_block_all\",\"violation_flags\":[\"shadow_ai_detected\",\"data_exfiltration_risk\"]},\"/sequence_number\":1,\"/spec_id\":\"aurelianaegis.envelope.v1\",\"/tenant_id\":\"tenant_acme_corp\"}",
+    "canonical_hex": "7b222f6163746f72223a7b226167656e745f6964223a2275726e3a736861646f773a636861746770743a61636d653a757365722d656d702d38383231222c22726567697374726174696f6e5f737461747573223a22756e72656769737465726564227d2c222f61646d6973736962696c6974795f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a38323334353637382d646464642d646464642d646464642d646464646464646464646464222c222f61727469666163745f74797065223a22657865637574696f6e5f72656365697074222c222f6361706162696c697479223a7b22646f6d61696e223a22736861646f772e6169222c226964223a22736861646f772e65787465726e616c5f61692e70726f6d70745f7375626d697373696f6e227d2c222f636f6e74657874223a7b22636f7272656c6174696f6e5f6964223a22636f72725f736861646f775f70726f78795f303031222c2275736572223a7b226964223a22656d702d38383231222c2274797065223a22656d706c6f796565227d7d2c222f646574656374696f6e223a7b22616374696f6e5f636f6d706c65746564223a66616c73652c22646174615f636c617373696669636174696f6e5f6578706f736564223a22636f6e666964656e7469616c222c22646574656374696f6e5f636f6e666964656e6365223a312c22646574656374696f6e5f6d6574686f64223a226e6574776f726b5f70726f7879222c22756e617574686f72697a65645f746f6f6c223a2263686174677074227d2c222f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a38323334353637382d313233342d313233342d313233342d313233343536373839303132222c222f6f7574636f6d65223a7b22626c6f636b696e675f726561736f6e223a22756e617574686f72697a65645f61695f746f6f6c222c22656e666f7263656d656e745f636f6d706f6e656e74223a22646c702d70726f78792d76322e312e30222c22737461747573223a22626c6f636b6564227d2c222f706f6c696379223a7b226465636973696f6e223a2264656e79222c22676f7665726e616e63655f70726f66696c655f6964223a2267705f736861646f775f61695f626c6f636b5f616c6c222c2276696f6c6174696f6e5f666c616773223a5b22736861646f775f61695f6465746563746564222c22646174615f657866696c74726174696f6e5f7269736b225d7d2c222f73657175656e63655f6e756d626572223a312c222f737065635f6964223a22617572656c69616e61656769732e656e76656c6f70652e7631222c222f74656e616e745f6964223a2274656e616e745f61636d655f636f7270227d",
+    "signature_base64url": "69bLV_fgXy9nOi9pkiN1xSpVBsHKj7k9meftFUEqmjRJQLRQoOcMV8oVtubJontCPI2iKm4bYzNP7-7EBNbqAA",
+    "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEArJe9+FjUDs5HxS3cCYSXAv1kfAgswaHKT77yZPIbmQ0=\n-----END PUBLIC KEY-----\n"
+  }
+}

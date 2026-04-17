@@ -1,0 +1,63 @@
+name: Validate Schema and Vectors
+
+on:
+  push:
+    paths:
+      - "schema/**"
+      - "examples/**"
+      - "scripts/**"
+      - "registry/**"
+      - "spec/**"
+      - "test-vectors/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "schema/**"
+      - "examples/**"
+      - "scripts/**"
+      - "registry/**"
+      - "spec/**"
+      - "test-vectors/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/validate.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Validate examples
+        run: npm run validate
+
+      - name: Compatibility policy checks
+        run: npm run check:compatibility
+
+      - name: Verify interoperability test vectors
+        run: npm run verify:test-vectors
+
+      - name: Schema constraint tests (positive and negative)
+        run: npm run test:constraints
+
+      - name: Registry and profile lint
+        run: npm run lint:registry
+
+      - name: Conformance matrix tests (C1/C2/C3)
+        run: npm run test:conformance
+
+      - name: Extensions digest determinism tests
+        run: npm run test:extensions-digest

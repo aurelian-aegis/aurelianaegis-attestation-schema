@@ -1,0 +1,114 @@
+{
+  "spec_id": "aurelianaegis.envelope.v1",
+  "artifact_type": "execution_receipt",
+  "event_id": "urn:aurelianaegis:event:tenant:a3b2c1d4-e5f6-7890-abcd-ef1234567890",
+  "schema_url": "https://aurelianaegis.io/schema/attestation-envelope.json",
+  "timestamp": "2026-02-25T14:30:00.123Z",
+  "tenant_id": "tenant_acme_corp",
+  "admissibility_event_id": "urn:aurelianaegis:event:tenant:a1b2c3d4-e5f6-7890-abcd-ef1234567891",
+  "sequence_number": 1,
+  "actor": {
+    "agent_id": "urn:aurelianaegis:agent:acme:payment-bot-001",
+    "external_id": "did:web:agents.acme-corp.com:payment-bot-001",
+    "passport_hash": "sha256:a3f2c8b1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1",
+    "passport_registry_ref": "https://registry.aurelianaegis.io/passports/urn:aurelianaegis:agent:acme:payment-bot-001/v2.1.0",
+    "agent_version": "2.1.0",
+    "runtime": {
+      "type": "aws_bedrock",
+      "runtime_id": "asst_abc123",
+      "region": "us-east-1"
+    }
+  },
+  "capability": {
+    "id": "finance.approve_payment",
+    "domain": "finance.payments",
+    "parameters": {
+      "amount_usd": 5000,
+      "currency": "USD",
+      "recipient_id_hash": "sha256:redacted"
+    },
+    "contains_pii": true,
+    "redaction_policy": "hash_sensitive_only",
+    "is_state_mutating": true
+  },
+  "context": {
+    "correlation_id": "corr_01HXYZ789",
+    "session_id": "sess_01HXYZ456",
+    "user": {
+      "type": "employee",
+      "id": "user_12345",
+      "segment": "enterprise"
+    },
+    "channel": "api",
+    "request_id": "req_abc123",
+    "telemetry": {
+      "latency_ms": 12
+    }
+  },
+  "policy": {
+    "governance_profile_id": "gp_payments_dual_control",
+    "risk_tier": "high",
+    "oversight_mode": "human_in_loop",
+    "trust_scores": {
+      "overall": 0.87,
+      "capability": 0.92
+    },
+    "trust_score_model": "https://aurelianaegis.io/trust-models/v1",
+    "trust_score_version": "1.0",
+    "decision": "allow",
+    "violation_flags": []
+  },
+  "profile_id": "io.aurelianaegis.profile.baseline-governed",
+  "extension_ids": [
+    "io.aurelianaegis.ext.finance-risk-controls"
+  ],
+  "extensions": {
+    "io.aurelianaegis.ext.finance-risk-controls": {
+      "approval_band": "high_value",
+      "control_mode": "dual_control"
+    }
+  },
+  "outcome": {
+    "status": "success",
+    "enforcement_component": "sdk-openai-v0.2.1"
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "value": "BZPn38pz_7-q2I3x0cpBsV5uNpCdVDUMEwxnV3-lqAnWCfpYhWs1RKhSuyyGo0D6yoYc7odTiEOYXivpl1S0CQ",
+    "signer_id": "sdk-openai-v0.2.1",
+    "signer_type": "enforcement",
+    "signed_fields": [
+      "/spec_id",
+      "/artifact_type",
+      "/event_id",
+      "/timestamp",
+      "/tenant_id",
+      "/admissibility_event_id",
+      "/sequence_number",
+      "/actor",
+      "/capability",
+      "/context",
+      "/policy",
+      "/outcome"
+    ],
+    "signing_canonical_method": "RFC8785"
+  },
+  "regulatory": {
+    "classifications": [
+      {
+        "framework": "eu_ai_act",
+        "version": "2024",
+        "category": "limited_risk",
+        "article_refs": ["Article 52"],
+        "jurisdiction": "eu"
+      }
+    ],
+    "flags": [
+      {
+        "framework": "sox",
+        "flag": "financial_control_relevant",
+        "jurisdiction": "us_federal"
+      }
+    ]
+  }
+}

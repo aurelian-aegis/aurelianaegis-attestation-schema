@@ -1,0 +1,70 @@
+{
+  "spec_id": "aurelianaegis.envelope.v1",
+  "artifact_type": "execution_receipt",
+  "event_id": "urn:aurelianaegis:event:acme-bank:b2c3d4e5-f6a7-8901-bcde-f12345678901",
+  "timestamp": "2026-04-14T12:00:02.500Z",
+  "tenant_id": "acme-bank",
+  "admissibility_event_id": "urn:aurelianaegis:event:acme-bank:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "admissibility_token_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "actor": {
+    "agent_id": "urn:aurelianaegis:agent:acme-bank:payment-bot",
+    "registration_status": "registered",
+    "external_id": "spiffe://acme-bank.com/agent/payment-bot",
+    "passport_hash": "sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+  },
+  "asset": {
+    "id": "urn:acme:asset:payments:wire-queue-01",
+    "type": "workflow",
+    "jurisdiction": "us"
+  },
+  "capability": {
+    "id": "finance.payments.approve_wire",
+    "domain": "finance.payments",
+    "redaction_policy": "hash_sensitive_only",
+    "contains_pii": true,
+    "is_state_mutating": true
+  },
+  "context": {
+    "correlation_id": "biz-tx-998877",
+    "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "cost": {
+      "input_tokens": 1200,
+      "output_tokens": 400,
+      "model_cost_usd": 0.02
+    },
+    "business_outcome_ref": "https://kpi.example.com/outcomes/biz-tx-998877"
+  },
+  "policy": {
+    "governance_profile_id": "finance-wires-high-value-v2",
+    "decision": "allow",
+    "risk_tier": "medium",
+    "oversight_mode": "supervised",
+    "policy_set_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "execution_intent_hash": "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
+  },
+  "profile_id": "io.aurelianaegis.profile.baseline-governed",
+  "outcome": {
+    "status": "success",
+    "enforcement_component": "sdk-openai-v0.3.0"
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "value": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    "signer_id": "control-plane-ingest-v1.0.0",
+    "signer_type": "control_plane",
+    "signed_fields": [
+      "/spec_id",
+      "/artifact_type",
+      "/event_id",
+      "/timestamp",
+      "/tenant_id",
+      "/actor",
+      "/capability",
+      "/context",
+      "/policy",
+      "/outcome",
+      "/admissibility_event_id"
+    ],
+    "signing_canonical_method": "RFC8785"
+  }
+}

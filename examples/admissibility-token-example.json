@@ -1,0 +1,109 @@
+{
+  "spec_id": "aurelianaegis.envelope.v1",
+  "artifact_type": "admissibility_token",
+  "event_id": "urn:aurelianaegis:event:acme-bank:a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "timestamp": "2026-04-14T12:00:00.000Z",
+  "tenant_id": "acme-bank",
+  "valid_from": "2026-04-14T12:00:00.000Z",
+  "valid_until": "2026-04-14T12:15:00.000Z",
+  "nonce": "n-7f3c9a2e1b8d4c6e5f0a1b2c3d4e5f6a",
+  "actor": {
+    "agent_id": "urn:aurelianaegis:agent:acme-bank:payment-bot",
+    "registration_status": "registered",
+    "external_id": "spiffe://acme-bank.com/agent/payment-bot",
+    "passport_hash": "sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+    "model_lifecycle_attestation_ref": "https://registry.example.com/models/payment-bot/lifecycle/v3"
+  },
+  "asset": {
+    "id": "urn:acme:asset:payments:wire-queue-01",
+    "type": "workflow",
+    "jurisdiction": "us"
+  },
+  "authority": {
+    "basis": "policy",
+    "policy_version": "finance-pep-bundle-2026.04.1"
+  },
+  "risk": {
+    "data_classes": ["pii", "financial"],
+    "sensitivity": "confidential",
+    "external_exposure": "none",
+    "irreversibility": "partially_reversible",
+    "blast_radius_estimate": "medium",
+    "novelty_flag": false,
+    "max_risk_score": 0.42,
+    "dynamic_assessment_ref": "https://risk.example.com/assessments/ra-2026-0414-001"
+  },
+  "capability": {
+    "id": "finance.payments.approve_wire",
+    "domain": "finance.payments",
+    "redaction_policy": "hash_sensitive_only",
+    "contains_pii": true,
+    "is_state_mutating": true
+  },
+  "context": {
+    "correlation_id": "biz-tx-998877",
+    "trace_id": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "telemetry": { "latency_ms": 12 }
+  },
+  "policy": {
+    "governance_profile_id": "finance-wires-high-value-v2",
+    "decision": "allow",
+    "risk_tier": "medium",
+    "oversight_mode": "supervised",
+    "reason_codes": ["within_autonomous_limit"],
+    "policy_set_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "execution_intent_hash": "fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210"
+  },
+  "profile_id": "io.aurelianaegis.profile.baseline-governed",
+  "data_boundaries": {
+    "data_sources_permitted": ["sap.fi", "core-banking.wires"],
+    "data_sinks_prohibited": ["public_llm", "personal_email"],
+    "data_residency": "us-east-1",
+    "ephemeral_only": false,
+    "boundary_enforcement": "allowed"
+  },
+  "liability": {
+    "liability_owner": {
+      "legal_entity_name": "Acme Bank National Association",
+      "lei": "549300ABCDEFGHIJ1234"
+    },
+    "indemnification_scope": "limited",
+    "incident_escalation_sla": "P1-1h"
+  },
+  "x-legal": {
+    "registered_agent": {
+      "entity_name": "Acme Bank National Association",
+      "delivery_window": "business_days_3",
+      "document_type": "wire_release_authorization",
+      "receipt_timestamp": "2026-04-14T12:00:00.000Z",
+      "deadline_impact": "none",
+      "escalation_status": "pending"
+    }
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "signer_id": "pep-gateway-finance-v1.0.0",
+    "signer_type": "enforcement",
+    "signed_fields": [
+      "/spec_id",
+      "/artifact_type",
+      "/event_id",
+      "/timestamp",
+      "/tenant_id",
+      "/valid_from",
+      "/valid_until",
+      "/nonce",
+      "/actor",
+      "/asset",
+      "/authority",
+      "/risk",
+      "/capability",
+      "/context",
+      "/policy",
+      "/data_boundaries",
+      "/liability"
+    ],
+    "signing_canonical_method": "RFC8785"
+  }
+}

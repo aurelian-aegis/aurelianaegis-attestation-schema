@@ -1,0 +1,7 @@
+id: io.aurelianaegis.ext.dlp-shadow-ai
+namespace: io.aurelianaegis.ext.dlp-shadow-ai
+owner: security-observability
+status: active
+schema_ref: https://aurelianaegis.io/schema/extensions/dlp-shadow-ai/v1
+security_impact: critical
+compatibility: additive

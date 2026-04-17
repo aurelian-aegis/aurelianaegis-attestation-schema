@@ -1,0 +1,24 @@
+{
+  "name": "minimal-ecdsa-p384",
+  "algorithm": "ECDSA-P384",
+  "key_material": {
+    "private_key_pem_path": "test-vectors/keys/ecdsa-p384-test-private.pem",
+    "public_key_pem_path": "test-vectors/keys/ecdsa-p384-test-public.pem",
+    "warning": "TEST KEY ONLY. Never use this key in production."
+  },
+  "payload_object": {
+    "/actor": {
+      "agent_id": "urn:aurelianaegis:agent:acme:test-ecdsa384",
+      "passport_hash": "sha256:c1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2"
+    },
+    "/event_id": "urn:aurelianaegis:event:tenant:32345678-1234-1234-1234-123456789012",
+    "/spec_id": "aurelianaegis.envelope.v1"
+  },
+  "expected": {
+    "canonical_json": "{\"/actor\":{\"agent_id\":\"urn:aurelianaegis:agent:acme:test-ecdsa384\",\"passport_hash\":\"sha256:c1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2\"},\"/event_id\":\"urn:aurelianaegis:event:tenant:32345678-1234-1234-1234-123456789012\",\"/spec_id\":\"aurelianaegis.envelope.v1\"}",
+    "canonical_hex": "7b222f6163746f72223a7b226167656e745f6964223a2275726e3a617572656c69616e61656769733a6167656e743a61636d653a746573742d6563647361333834222c2270617373706f72745f68617368223a227368613235363a63316232633364346535663661376238633964306531663261336234633564366537663861396230633164326533663461356236633764386539663061316232227d2c222f6576656e745f6964223a2275726e3a617572656c69616e61656769733a6576656e743a74656e616e743a33323334353637382d313233342d313233342d313233342d313233343536373839303132222c222f737065635f6964223a22617572656c69616e61656769732e656e76656c6f70652e7631227d",
+    "signature_base64url": "oPAn7pOoNl4cIm69NL6uazhmfVF0Wx5fz-FiOYsZ6P9ztgGx4a83R7UQLjWIgr2sSRiQ7IrAv852sp286WoHY-tVM7NHce0cUZoeuP3aZEss5r0dq7BK0muIiFZNPEHw",
+    "signature_encoding": "raw_p1363",
+    "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEFDEZ4FD2x6YIQjGX6/UPhSqKS60BQv//\n2Kc5zDOUt8HMOZxoWLCYMlYWjCRMROl//HEF8p9gLRE+qQKk885/ynWcOncxM1fJ\np5hhGgQxUx8RBTrxx8bo8kFVXLGZOj8f\n-----END PUBLIC KEY-----\n"
+  }
+}
