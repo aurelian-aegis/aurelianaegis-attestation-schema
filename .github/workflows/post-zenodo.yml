@@ -1,15 +1,11 @@
-name: Release Smoke Checks
+name: Post-Zenodo Metadata Check
 
+# Run this manually after Zenodo assigns a DOI and CITATION.cff + README are updated.
 on:
-  push:
-    branches:
-      - "release/**"
-    tags:
-      - "v*"
   workflow_dispatch:
 
 jobs:
-  smoke:
+  check-doi:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,13 +21,10 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Validate release metadata completeness (DOI + README)
+      - name: Validate DOI in CITATION.cff and README
         run: npm run check:release-metadata
-        # Requires Zenodo DOI in CITATION.cff — run manually after Zenodo step
-        # via workflow_dispatch once DOI is assigned and committed
-        if: github.event_name == 'workflow_dispatch'
 
-      - name: Verify canonical $id endpoint availability + immutable bytes
+      - name: Verify canonical $id endpoint
         env:
           SCHEMA_HOST_URL: https://aurelianaegis.io/schema/attestation-envelope.json
         run: npm run monitor:schema-host
