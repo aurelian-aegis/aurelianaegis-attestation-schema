@@ -26,4 +26,3 @@ jobs:
         env:
           SCHEMA_HOST_URL: https://aurelianaegis.io/schema/attestation-envelope.json
         run: npm run monitor:schema-host
-        continue-on-error: true  # Remove once aurelianaegis.io is confirmed live
